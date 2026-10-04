@@ -1,4 +1,3 @@
-
 import streamlit as st
 import tensorflow as tf
 import joblib
@@ -25,40 +24,129 @@ st.markdown(
     """
     <style>
 
+    /* --------------------------------------------------------
+       MAIN APPLICATION
+    -------------------------------------------------------- */
+
     .stApp {
-        background-color: #f7faf7;
+        background-color: #ffffff;
+        color: #1f2937;
     }
+
+    /* Make normal Streamlit text readable */
+    .stMarkdown,
+    .stMarkdown p,
+    p,
+    label {
+        color: #1f2937 !important;
+    }
+
+    /* Widget labels */
+    [data-testid="stWidgetLabel"] p {
+        color: #1f2937 !important;
+        font-weight: 700 !important;
+        font-size: 15px !important;
+    }
+
+    /* Help / caption text */
+    [data-testid="stCaptionContainer"] {
+        color: #4b5563 !important;
+    }
+
+    [data-testid="stCaptionContainer"] p {
+        color: #4b5563 !important;
+    }
+
+    /* --------------------------------------------------------
+       NUMBER INPUTS
+    -------------------------------------------------------- */
+
+    [data-testid="stNumberInput"] input {
+        color: #111827 !important;
+        background-color: #ffffff !important;
+        font-weight: 600 !important;
+    }
+
+    [data-testid="stNumberInput"] button {
+        color: #ffffff !important;
+    }
+
+
+    /* --------------------------------------------------------
+       HEADER
+    -------------------------------------------------------- */
 
     .main-title {
         text-align: center;
         font-size: 42px;
-        font-weight: 750;
-        color: #1b5e20;
+        font-weight: 800;
+        color: #1b5e20 !important;
         margin-bottom: 5px;
     }
 
     .subtitle {
         text-align: center;
         font-size: 18px;
-        color: #607d60;
+        color: #4b6350 !important;
         margin-bottom: 30px;
     }
 
+
+    /* --------------------------------------------------------
+       INTRODUCTION BOX
+    -------------------------------------------------------- */
+
     .intro-box {
         background: #e8f5e9;
+        color: #1f2937 !important;
         border-left: 6px solid #43a047;
-        padding: 18px 22px;
+        padding: 20px 24px;
         border-radius: 12px;
         margin-bottom: 25px;
+        line-height: 1.7;
     }
+
+    .intro-box b {
+        color: #1b5e20 !important;
+    }
+
+
+    /* --------------------------------------------------------
+       SECTION TITLES
+    -------------------------------------------------------- */
 
     .section-title {
         font-size: 22px;
-        font-weight: 700;
-        color: #2e7d32;
-        margin-top: 15px;
+        font-weight: 750;
+        color: #2e7d32 !important;
+        margin-top: 20px;
         margin-bottom: 10px;
     }
+
+
+    /* --------------------------------------------------------
+       PREDICTION BUTTON
+    -------------------------------------------------------- */
+
+    button[kind="primary"] {
+        background-color: #2e7d32 !important;
+        border-color: #2e7d32 !important;
+        color: #ffffff !important;
+        font-weight: 750 !important;
+        min-height: 50px !important;
+        font-size: 16px !important;
+    }
+
+    button[kind="primary"]:hover {
+        background-color: #1b5e20 !important;
+        border-color: #1b5e20 !important;
+        color: #ffffff !important;
+    }
+
+
+    /* --------------------------------------------------------
+       RESULT CARD
+    -------------------------------------------------------- */
 
     .result-card {
         background: linear-gradient(
@@ -69,42 +157,102 @@ st.markdown(
 
         border: 2px solid #81c784;
         border-radius: 22px;
-        padding: 30px;
+        padding: 32px;
         text-align: center;
         margin-top: 18px;
+        margin-bottom: 20px;
+    }
+
+    .result-icon {
+        font-size: 50px;
+        margin-bottom: 5px;
     }
 
     .result-label {
         font-size: 17px;
-        color: #607d60;
+        color: #455a4a !important;
+        font-weight: 650;
     }
 
     .crop-name {
-        font-size: 46px;
-        font-weight: 800;
-        color: #1b5e20;
+        font-size: 48px;
+        font-weight: 850;
+        color: #1b5e20 !important;
         text-transform: capitalize;
         margin: 8px 0;
     }
 
     .confidence {
-        font-size: 24px;
-        font-weight: 700;
-        color: #2e7d32;
+        font-size: 25px;
+        font-weight: 750;
+        color: #2e7d32 !important;
     }
 
     .confidence-text {
-        color: #558b2f;
+        color: #558b2f !important;
         font-size: 14px;
+        font-weight: 650;
+        margin-top: 4px;
     }
+
+    .result-note {
+        color: #4b5563 !important;
+        font-size: 14px;
+        margin-top: 18px;
+    }
+
+
+    /* --------------------------------------------------------
+       TOP 3 PREDICTIONS
+    -------------------------------------------------------- */
+
+    .prediction-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        padding: 10px 5px 5px 5px;
+
+        font-size: 17px;
+    }
+
+    .prediction-name {
+        color: #1f2937 !important;
+        font-weight: 750;
+    }
+
+    .prediction-percent {
+        color: #1b5e20 !important;
+        font-weight: 850;
+    }
+
+    /* Progress bar */
+    [data-testid="stProgress"] > div > div {
+        background-color: #43a047 !important;
+    }
+
+
+    /* --------------------------------------------------------
+       INPUT SUMMARY TABLE
+    -------------------------------------------------------- */
+
+    [data-testid="stDataFrame"] {
+        color: #1f2937 !important;
+    }
+
+
+    /* --------------------------------------------------------
+       FOOTER
+    -------------------------------------------------------- */
 
     .footer {
         margin-top: 35px;
         padding-top: 15px;
         border-top: 1px solid #d7ddd7;
         text-align: center;
-        color: #777;
+        color: #555555 !important;
         font-size: 12px;
+        line-height: 1.7;
     }
 
     </style>
@@ -144,34 +292,33 @@ model, scaler, label_encoder = load_system()
 
 st.markdown(
     """
-    <div class="main-title">
-        🌾 Smart Crop Recommendation System
-    </div>
+<div class="main-title">
+🌾 Smart Crop Recommendation System
+</div>
 
-    <div class="subtitle">
-        Artificial Neural Network Based Agricultural
-        Decision Support System
-    </div>
-    """,
+<div class="subtitle">
+Artificial Neural Network Based Agricultural Decision Support System
+</div>
+""",
     unsafe_allow_html=True
 )
 
 
+# ============================================================
+# INTRODUCTION
+# ============================================================
+
 st.markdown(
     """
-    <div class="intro-box">
+<div class="intro-box">
+<b>🌱 How does it work?</b><br><br>
 
-    <b>🌱 How does it work?</b><br><br>
+Enter the soil nutrient and climatic conditions of the agricultural area below.<br><br>
 
-    Enter the soil nutrient and climatic conditions of
-    the agricultural area below.
-
-    The trained Artificial Neural Network analyzes
-    seven environmental parameters and recommends
-    the most suitable crop from 22 crop categories.
-
-    </div>
-    """,
+The trained Artificial Neural Network analyses seven environmental
+parameters and recommends the most suitable crop from 22 crop categories.
+</div>
+""",
     unsafe_allow_html=True
 )
 
@@ -185,6 +332,15 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+st.caption(
+    "Enter soil nutrient values within the ranges represented "
+    "in the ANN training dataset."
+)
+
+
+# ------------------------------------------------------------
+# N, P, K
+# ------------------------------------------------------------
 
 col1, col2, col3 = st.columns(3)
 
@@ -192,36 +348,42 @@ col1, col2, col3 = st.columns(3)
 with col1:
 
     nitrogen = st.number_input(
-        "Nitrogen (N)",
+        "Nitrogen (N) — 0–140 kg/ha",
         min_value=0.0,
         max_value=140.0,
         value=70.0,
         step=1.0,
-        help="Nitrogen value represented in the training dataset."
+        help="Training dataset range: 0–140 kg/ha"
     )
 
 
 with col2:
 
     phosphorus = st.number_input(
-        "Phosphorus (P)",
+        "Phosphorus (P) — 5–145 kg/ha",
         min_value=5.0,
         max_value=145.0,
         value=50.0,
-        step=1.0
+        step=1.0,
+        help="Training dataset range: 5–145 kg/ha"
     )
 
 
 with col3:
 
     potassium = st.number_input(
-        "Potassium (K)",
+        "Potassium (K) — 5–205 kg/ha",
         min_value=5.0,
         max_value=205.0,
         value=50.0,
-        step=1.0
+        step=1.0,
+        help="Training dataset range: 5–205 kg/ha"
     )
 
+
+# ------------------------------------------------------------
+# CLIMATE
+# ------------------------------------------------------------
 
 st.markdown(
     '<div class="section-title">🌦️ Climatic Conditions</div>',
@@ -235,24 +397,32 @@ col4, col5 = st.columns(2)
 with col4:
 
     temperature = st.number_input(
-        "Temperature (°C)",
-        min_value=8.0,
-        max_value=44.0,
+        "Temperature — 8.83–43.68 °C",
+        min_value=8.83,
+        max_value=43.68,
         value=25.0,
-        step=0.1
+        step=0.1,
+        format="%.2f",
+        help="Training dataset range: 8.83–43.68 °C"
     )
 
 
 with col5:
 
     humidity = st.number_input(
-        "Humidity (%)",
-        min_value=14.0,
-        max_value=100.0,
+        "Relative Humidity — 14.26–99.98 %",
+        min_value=14.26,
+        max_value=99.98,
         value=70.0,
-        step=0.1
+        step=0.1,
+        format="%.2f",
+        help="Training dataset range: 14.26–99.98%"
     )
 
+
+# ------------------------------------------------------------
+# SOIL pH + RAINFALL
+# ------------------------------------------------------------
 
 st.markdown(
     '<div class="section-title">🌍 Soil & Rainfall Conditions</div>',
@@ -266,23 +436,41 @@ col6, col7 = st.columns(2)
 with col6:
 
     ph = st.number_input(
-        "Soil pH",
-        min_value=3.5,
-        max_value=10.0,
-        value=6.5,
-        step=0.01
+        "Soil pH — 3.50–9.94",
+        min_value=3.50,
+        max_value=9.94,
+        value=6.50,
+        step=0.01,
+        format="%.2f",
+        help="pH is unitless. Training dataset range: 3.50–9.94"
     )
 
 
 with col7:
 
     rainfall = st.number_input(
-        "Rainfall (mm)",
-        min_value=20.0,
-        max_value=300.0,
+        "Rainfall — 20.21–298.56 mm",
+        min_value=20.21,
+        max_value=298.56,
         value=100.0,
-        step=0.1
+        step=0.1,
+        format="%.2f",
+        help="Training dataset range: 20.21–298.56 mm"
     )
+
+
+# ============================================================
+# INPUT GUIDANCE
+# ============================================================
+
+st.info(
+    """
+    ℹ️ The displayed ranges correspond to the minimum and
+    maximum values represented in the ANN training dataset.
+    Predictions outside these ranges are not supported by
+    this application.
+    """
+)
 
 
 # ============================================================
@@ -304,6 +492,10 @@ predict = st.button(
 
 if predict:
 
+    # --------------------------------------------------------
+    # CREATE INPUT DATAFRAME
+    # --------------------------------------------------------
+
     input_data = pd.DataFrame(
         {
             "N": [nitrogen],
@@ -317,18 +509,29 @@ if predict:
     )
 
 
-    # Apply the scaler learned from training data
-    input_scaled = scaler.transform(input_data)
+    # --------------------------------------------------------
+    # SCALE INPUT USING TRAINING SCALER
+    # --------------------------------------------------------
+
+    input_scaled = scaler.transform(
+        input_data
+    )
 
 
-    # ANN prediction
+    # --------------------------------------------------------
+    # ANN PREDICTION
+    # --------------------------------------------------------
+
     probabilities = model.predict(
         input_scaled,
         verbose=0
     )[0]
 
 
-    # Highest-probability crop
+    # --------------------------------------------------------
+    # HIGHEST-PROBABILITY CLASS
+    # --------------------------------------------------------
+
     predicted_index = int(
         np.argmax(probabilities)
     )
@@ -344,7 +547,10 @@ if predict:
     )
 
 
-    # Confidence description
+    # --------------------------------------------------------
+    # CONFIDENCE DESCRIPTION
+    # --------------------------------------------------------
+
     if confidence >= 90:
 
         confidence_description = (
@@ -374,32 +580,39 @@ if predict:
     # PRIMARY RESULT
     # ========================================================
 
+    # IMPORTANT:
+    # HTML begins immediately after the triple quotes.
+    # This prevents Streamlit Markdown from displaying it
+    # as a code block.
+
+    result_html = f"""<div class="result-card">
+<div class="result-icon">🌱</div>
+
+<div class="result-label">
+ANN Recommended Crop
+</div>
+
+<div class="crop-name">
+{predicted_crop.title()}
+</div>
+
+<div class="confidence">
+{confidence:.2f}% Model Confidence
+</div>
+
+<div class="confidence-text">
+{confidence_description}
+</div>
+
+<div class="result-note">
+Recommendation generated using the soil nutrient and
+climatic conditions entered by the user.
+</div>
+</div>"""
+
+
     st.markdown(
-        f"""
-        <div class="result-card">
-
-            <div style="font-size:48px;">
-                🌱
-            </div>
-
-            <div class="result-label">
-                ANN Recommended Crop
-            </div>
-
-            <div class="crop-name">
-                {predicted_crop}
-            </div>
-
-            <div class="confidence">
-                {confidence:.2f}% Model Confidence
-            </div>
-
-            <div class="confidence-text">
-                {confidence_description}
-            </div>
-
-        </div>
-        """,
+        result_html,
         unsafe_allow_html=True
     )
 
@@ -428,36 +641,36 @@ if predict:
             [int(index)]
         )[0]
 
+
         probability = float(
             probabilities[index] * 100
         )
 
 
-        left, right = st.columns(
-            [3, 1]
+        # Custom readable row instead of st.metric()
+        prediction_html = f"""<div class="prediction-row">
+<div class="prediction-name">
+{rank}. {crop.title()}
+</div>
+
+<div class="prediction-percent">
+{probability:.2f}%
+</div>
+</div>"""
+
+
+        st.markdown(
+            prediction_html,
+            unsafe_allow_html=True
         )
 
 
-        with left:
-
-            st.write(
-                f"**{rank}. {crop.title()}**"
+        st.progress(
+            min(
+                probability / 100,
+                1.0
             )
-
-            st.progress(
-                min(
-                    probability / 100,
-                    1.0
-                )
-            )
-
-
-        with right:
-
-            st.metric(
-                "Probability",
-                f"{probability:.2f}%"
-            )
+        )
 
 
     # ========================================================
@@ -471,26 +684,27 @@ if predict:
         summary = pd.DataFrame(
             {
                 "Parameter": [
-                    "Nitrogen",
-                    "Phosphorus",
-                    "Potassium",
+                    "Nitrogen (N)",
+                    "Phosphorus (P)",
+                    "Potassium (K)",
                     "Temperature",
-                    "Humidity",
+                    "Relative Humidity",
                     "Soil pH",
                     "Rainfall"
                 ],
 
                 "Value": [
-                    nitrogen,
-                    phosphorus,
-                    potassium,
-                    temperature,
-                    humidity,
-                    ph,
-                    rainfall
+                    f"{nitrogen:.2f} kg/ha",
+                    f"{phosphorus:.2f} kg/ha",
+                    f"{potassium:.2f} kg/ha",
+                    f"{temperature:.2f} °C",
+                    f"{humidity:.2f} %",
+                    f"{ph:.2f}",
+                    f"{rainfall:.2f} mm"
                 ]
             }
         )
+
 
         st.dataframe(
             summary,
@@ -505,11 +719,13 @@ if predict:
 
 st.info(
     """
-    This application is an academic Artificial Neural
-    Network prototype. The recommendation is based on
-    patterns learned from the selected dataset and should
-    not replace professional agricultural or site-specific
-    field assessment.
+    ⚠️ This application is an academic Artificial Neural
+    Network prototype. The recommendation is based on patterns
+    learned from the selected crop recommendation dataset.
+
+    The model output should not replace professional
+    agricultural advice, soil laboratory testing, or
+    site-specific field assessment.
     """
 )
 
@@ -520,15 +736,21 @@ st.info(
 
 st.markdown(
     """
-    <div class="footer">
+<div class="footer">
 
-    Artificial Neural Network Crop Recommendation Project
+<b>Artificial Neural Network Crop Recommendation Project</b>
 
-    <br>
+<br><br>
 
-    Inputs: N • P • K • Temperature • Humidity • pH • Rainfall
+Model Inputs:
+N • P • K • Temperature • Humidity • pH • Rainfall
 
-    </div>
-    """,
+<br>
+
+Output:
+Recommended Crop from 22 Crop Classes
+
+</div>
+""",
     unsafe_allow_html=True
 )
