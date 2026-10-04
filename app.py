@@ -1,5 +1,4 @@
 import os
-
 import joblib
 import numpy as np
 import pandas as pd
@@ -8,7 +7,7 @@ import tensorflow as tf
 
 
 # ============================================================
-# PAGE SETTINGS
+# PAGE CONFIGURATION
 # ============================================================
 
 st.set_page_config(
@@ -29,7 +28,7 @@ ENCODER_FILE = "crop_label_encoder.pkl"
 
 
 # ============================================================
-# CHECK FILES
+# CHECK REQUIRED FILES
 # ============================================================
 
 required_files = [
@@ -39,18 +38,15 @@ required_files = [
 ]
 
 missing_files = [
-    file
-    for file in required_files
+    file for file in required_files
     if not os.path.exists(file)
 ]
 
 if missing_files:
-
     st.error(
-        "The following required files are missing: "
+        "Missing required files: "
         + ", ".join(missing_files)
     )
-
     st.stop()
 
 
@@ -87,13 +83,10 @@ model, scaler, label_encoder = load_system()
 st.title("🌾 Smart Crop Recommendation System")
 
 st.markdown(
-    """
-    **Artificial Neural Network Based Agricultural Decision
-    Support System**
-    """
+    "**Artificial Neural Network Based Agricultural Decision Support System**"
 )
 
-st.caption("Application UI version 3.0")
+st.caption("UI BUILD 4.0 — Clean Native Streamlit Version")
 
 
 # ============================================================
@@ -102,13 +95,13 @@ st.caption("Application UI version 3.0")
 
 st.success(
     """
-    🌱 **How does the system work?**
+    🌱 **How does it work?**
 
     Enter the soil nutrient and climatic conditions below.
 
-    The trained Artificial Neural Network analyses the
-    environmental conditions and recommends the most suitable
-    crop from **22 crop classes**.
+    The trained Artificial Neural Network analyses seven
+    environmental parameters and recommends the most suitable
+    crop from 22 crop classes.
     """
 )
 
@@ -120,11 +113,11 @@ st.success(
 st.header("📋 Enter Environmental Conditions")
 
 
-with st.form("crop_form"):
+with st.form("crop_input_form"):
 
-    # --------------------------------------------------------
+    # ========================================================
     # SOIL NUTRIENTS
-    # --------------------------------------------------------
+    # ========================================================
 
     st.subheader("🧪 Soil Nutrient Parameters")
 
@@ -139,10 +132,12 @@ with st.form("crop_form"):
             max_value=140.0,
             value=70.0,
             step=1.0,
-            help="Training dataset range: 0–140"
+            help="Training range: 0–140"
         )
 
-        st.caption("Range: 0–140 | Dataset nutrient units")
+        st.caption(
+            "**Range:** 0–140 | Dataset nutrient units"
+        )
 
 
     with col2:
@@ -153,10 +148,12 @@ with st.form("crop_form"):
             max_value=145.0,
             value=50.0,
             step=1.0,
-            help="Training dataset range: 5–145"
+            help="Training range: 5–145"
         )
 
-        st.caption("Range: 5–145 | Dataset nutrient units")
+        st.caption(
+            "**Range:** 5–145 | Dataset nutrient units"
+        )
 
 
     with col3:
@@ -167,18 +164,20 @@ with st.form("crop_form"):
             max_value=205.0,
             value=50.0,
             step=1.0,
-            help="Training dataset range: 5–205"
+            help="Training range: 5–205"
         )
 
-        st.caption("Range: 5–205 | Dataset nutrient units")
+        st.caption(
+            "**Range:** 5–205 | Dataset nutrient units"
+        )
 
 
     st.divider()
 
 
-    # --------------------------------------------------------
-    # CLIMATIC PARAMETERS
-    # --------------------------------------------------------
+    # ========================================================
+    # CLIMATE
+    # ========================================================
 
     st.subheader("🌦️ Climatic Conditions")
 
@@ -196,7 +195,9 @@ with st.form("crop_form"):
             format="%.2f"
         )
 
-        st.caption("Range: 8.83–43.68 °C")
+        st.caption(
+            "**Range:** 8.83–43.68 °C"
+        )
 
 
     with col5:
@@ -210,15 +211,17 @@ with st.form("crop_form"):
             format="%.2f"
         )
 
-        st.caption("Range: 14.26–99.98 %")
+        st.caption(
+            "**Range:** 14.26–99.98 %"
+        )
 
 
     st.divider()
 
 
-    # --------------------------------------------------------
-    # SOIL pH AND RAINFALL
-    # --------------------------------------------------------
+    # ========================================================
+    # SOIL + RAINFALL
+    # ========================================================
 
     st.subheader("🌍 Soil & Rainfall Conditions")
 
@@ -236,7 +239,9 @@ with st.form("crop_form"):
             format="%.2f"
         )
 
-        st.caption("Range: 3.50–9.94 | Unitless")
+        st.caption(
+            "**Range:** 3.50–9.94 | Unitless"
+        )
 
 
     with col7:
@@ -250,29 +255,31 @@ with st.form("crop_form"):
             format="%.2f"
         )
 
-        st.caption("Range: 20.21–298.56 mm")
+        st.caption(
+            "**Range:** 20.21–298.56 mm"
+        )
 
 
     st.write("")
 
+
     submitted = st.form_submit_button(
         "🌾 Analyse Conditions & Recommend Crop",
         type="primary",
-        use_container_width=True
+        width="stretch"
     )
 
 
 # ============================================================
-# NOTE ABOUT INPUT RANGE
+# INPUT INFORMATION
 # ============================================================
 
 st.info(
     """
-    ℹ️ The displayed ranges represent the minimum and maximum
-    values contained in the training dataset.
+    ℹ️ The displayed ranges correspond to values represented
+    in the ANN training dataset.
 
-    The system is intended to be used only within these input
-    ranges.
+    The model should only be used within these ranges.
     """
 )
 
@@ -283,6 +290,7 @@ st.info(
 
 if submitted:
 
+    # Create one input record
     input_data = pd.DataFrame(
         {
             "N": [nitrogen],
@@ -296,7 +304,7 @@ if submitted:
     )
 
 
-    # Scale using the saved training scaler
+    # Scale using the saved scaler
     input_scaled = scaler.transform(
         input_data
     )
@@ -325,20 +333,20 @@ if submitted:
 
 
     # ========================================================
-    # MAIN RESULT
+    # RESULT
     # ========================================================
 
     st.divider()
 
-    st.header("🎯 Crop Recommendation")
+    st.header("🎯 ANN Crop Recommendation")
 
 
-    result_left, result_right = st.columns(
+    result_col1, result_col2 = st.columns(
         [2, 1]
     )
 
 
-    with result_left:
+    with result_col1:
 
         st.subheader("🌱 Recommended Crop")
 
@@ -347,11 +355,11 @@ if submitted:
         )
 
 
-    with result_right:
+    with result_col2:
 
         st.metric(
-            label="Model Confidence",
-            value=f"{confidence:.2f}%"
+            "Model Confidence",
+            f"{confidence:.2f}%"
         )
 
 
@@ -382,7 +390,7 @@ if submitted:
 
 
     # ========================================================
-    # TOP 3 PREDICTIONS
+    # TOP 3
     # ========================================================
 
     st.subheader("📊 Top 3 ANN Predictions")
@@ -403,39 +411,39 @@ if submitted:
         )[0]
 
 
-        probability = float(
+        crop_probability = float(
             probabilities[index]
         )
 
 
-        probability_percent = (
-            probability * 100
+        crop_percent = (
+            crop_probability * 100
         )
 
 
-        crop_col, value_col = st.columns(
+        name_col, percentage_col = st.columns(
             [4, 1]
         )
 
 
-        with crop_col:
+        with name_col:
 
-            st.write(
-                f"**{rank}. {crop_name.title()}**"
+            st.markdown(
+                f"### {rank}. {crop_name.title()}"
             )
 
 
-        with value_col:
+        with percentage_col:
 
-            st.write(
-                f"**{probability_percent:.2f}%**"
+            st.markdown(
+                f"### {crop_percent:.2f}%"
             )
 
 
         st.progress(
             min(
                 max(
-                    probability,
+                    crop_probability,
                     0.0
                 ),
                 1.0
@@ -447,7 +455,9 @@ if submitted:
     # INPUT SUMMARY
     # ========================================================
 
-    st.subheader("📋 Submitted Environmental Conditions")
+    st.subheader(
+        "📋 Submitted Environmental Conditions"
+    )
 
 
     summary = pd.DataFrame(
@@ -462,7 +472,7 @@ if submitted:
                 "Rainfall"
             ],
 
-            "Entered Value": [
+            "Value": [
                 f"{nitrogen:.0f}",
                 f"{phosphorus:.0f}",
                 f"{potassium:.0f}",
@@ -497,7 +507,7 @@ if submitted:
 
     st.dataframe(
         summary,
-        use_container_width=True,
+        width="stretch",
         hide_index=True
     )
 
@@ -508,14 +518,17 @@ if submitted:
 
 st.divider()
 
-with st.expander("🧠 About the ANN Model"):
+
+with st.expander(
+    "🧠 About the Artificial Neural Network"
+):
 
     st.markdown(
         """
-        ### ANN Architecture
+        ### Model Architecture
 
-        **Input layer**
-        - 7 environmental variables
+        **Input Layer**
+        - 7 input variables
 
         **Hidden Layer 1**
         - 32 neurons
@@ -528,17 +541,20 @@ with st.expander("🧠 About the ANN Model"):
         **Output Layer**
         - 22 neurons
         - Softmax activation
-        - One neuron for each crop class
 
-        ### Model Inputs
+        ### Input Variables
 
-        - Nitrogen
-        - Phosphorus
-        - Potassium
-        - Temperature
-        - Relative Humidity
-        - Soil pH
-        - Rainfall
+        1. Nitrogen
+        2. Phosphorus
+        3. Potassium
+        4. Temperature
+        5. Relative Humidity
+        6. Soil pH
+        7. Rainfall
+
+        ### Output
+
+        One recommended crop from 22 crop classes.
         """
     )
 
@@ -551,12 +567,12 @@ st.warning(
     """
     ⚠️ **Academic prototype**
 
-    This crop recommendation application was developed as an
-    Artificial Neural Network academic project.
+    This application was developed as an Artificial Neural
+    Network academic project.
 
     Recommendations are based on patterns learned from the
     selected dataset and should not replace professional
-    agricultural advice, laboratory soil analysis, or
+    agricultural advice, laboratory soil testing, or
     site-specific field assessment.
     """
 )
@@ -569,7 +585,13 @@ st.warning(
 st.divider()
 
 st.caption(
-    "ANN Crop Recommendation Project | "
-    "Inputs: N, P, K, Temperature, Humidity, pH and Rainfall | "
-    "Output: 1 of 22 crop classes"
+    "Artificial Neural Network Crop Recommendation Project"
+)
+
+st.caption(
+    "Inputs: N • P • K • Temperature • Humidity • pH • Rainfall"
+)
+
+st.caption(
+    "Output: Recommended Crop from 22 Crop Classes"
 )
